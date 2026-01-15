@@ -23,17 +23,30 @@ func (t *Transaction) PostProcess() {
 }
 
 type Statement struct {
-	Type         string        `json:"type"`
-	Date         time.Time     `json:"date,format:date"`
-	Transactions []Transaction `json:"transactions"`
+	Type         string         `json:"type"`
+	Date         time.Time      `json:"date,format:date"`
+	Transactions []*Transaction `json:"transactions"`
 }
 
 func NewStatement() *Statement {
 	return &Statement{}
 }
 
+// PostProcess adjusts transaction dates for year boundary cases.
+// It depends on the statement date. If the statement month is smaller than post/transaction month,
+// the post/transaction year should be decremented by 1.
 func (s *Statement) PostProcess() {
+	month := s.Date.Month()
+	if month == 12 {
+		return
+	}
 
+	for _, t := range s.Transactions {
+		if t.PostDate.Month() > month {
+			t.PostDate = t.PostDate.AddDate(-1, 0, 0)
+		}
+		if t.TransactionDate.Month() > month {
+			t.TransactionDate = t.TransactionDate.AddDate(-1, 0, 0)
+		}
+	}
 }
-
-// TODO: postprocessing the year Dec-Jan boundary cases
