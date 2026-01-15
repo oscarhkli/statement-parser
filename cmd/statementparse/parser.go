@@ -1,6 +1,7 @@
 package statementparse
 
 import (
+	"log/slog"
 	"strconv"
 	"strings"
 	"time"
@@ -47,14 +48,12 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 	}
 
 	lines := strings.Split(text, "\n")
+	slog.Info("", "Total lines", len(lines))
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if len(line) == 0 {
 			continue
 		}
-
-		transactions = append(transactions, &Transaction{})
-		last := transactions[len(transactions)-1]
 
 		var phrases []string
 		for len(line) > 0 {
@@ -64,7 +63,7 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 		}
 
 		if len(phrases) == 1 {
-			last.Description += "; " + phrases[0]
+			transactions[len(transactions)-1].Description += "; " + phrases[0]
 			continue
 		}
 
@@ -72,6 +71,9 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 		if strings.HasSuffix(phrases[len(phrases)-1], "CR") {
 			continue
 		}
+
+		t := &Transaction{}
+		transactions = append(transactions, t)
 
 		// 1st and 2nd phrases must be postDate and transactionDate
 		// 3rd must be part of description
@@ -81,33 +83,42 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 		if err != nil {
 			return nil, err
 		}
-		last.PostDate = postDate
+		t.PostDate = postDate
 		transactionDate, err := parseDate(phrases[1] + yearStr)
 		if err != nil {
 			return nil, err
 		}
-		last.TransactionDate = transactionDate
-		last.Description = phrases[2]
+		t.TransactionDate = transactionDate
+		t.Description = phrases[2]
 		amount, err := parseAmount(phrases[len(phrases)-1])
 		if err != nil {
 			return nil, err
 		}
-		last.Amount = amount
+		t.Amount = amount
 
 		phrases = phrases[3 : len(phrases)-1]
 
+		if len(phrases) == 0 {
+			continue
+		}
+
 		localAmount, err := parseAmount(phrases[len(phrases)-1])
 		if err == nil {
-			last.LocalAmount = localAmount
-			last.Currency = phrases[len(phrases)-2]
+			t.LocalAmount = localAmount
+			t.Currency = phrases[len(phrases)-2]
 			phrases = phrases[:len(phrases)-2]
 		}
 
-		if len(phrases) > 0 {
-			last.Location = strings.Join(phrases, ", ")
+		if len(phrases) == 0 {
+			continue
 		}
+
+		t.Location = strings.Join(phrases, ", ")
 	}
+
+	slog.Info("", "Total transactions parsed", len(transactions))
 	return transactions, nil
 }
 
 // TODO: postprocessing the year Dec-Jan boundary cases
+// TODO: postprocessing defaurlt currency

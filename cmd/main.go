@@ -5,9 +5,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/oscarhkli/statement-parser/cmd/internal/logging"
 )
 
 func main() {
+	logging.Init()
+
 	path := "2025-10-20_Statement"
 	text, err := readPdfDirect(path + ".pdf")
 	if err != nil {
