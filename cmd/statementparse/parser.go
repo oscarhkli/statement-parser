@@ -8,7 +8,7 @@ import (
 )
 
 func Parse(text string) Statement {
-	return Statement{}
+	return *NewStatement()
 }
 
 func findPhraseEndIndex(text string, start int) int {
@@ -72,7 +72,7 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 			continue
 		}
 
-		t := &Transaction{}
+		t := NewTransaction()
 		transactions = append(transactions, t)
 
 		// 1st and 2nd phrases must be postDate and transactionDate
@@ -119,6 +119,3 @@ func ParseTransactions(text string, year int) ([]*Transaction, error) {
 	slog.Info("", "Total transactions parsed", len(transactions))
 	return transactions, nil
 }
-
-// TODO: postprocessing the year Dec-Jan boundary cases
-// TODO: postprocessing defaurlt currency
