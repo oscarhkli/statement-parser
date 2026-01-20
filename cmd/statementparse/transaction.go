@@ -28,8 +28,12 @@ type Statement struct {
 	Transactions []*Transaction `json:"transactions"`
 }
 
-func NewStatement() *Statement {
-	return &Statement{}
+func NewStatement(statementType string, date time.Time, transactions []*Transaction) *Statement {
+	return &Statement{
+		Type:         statementType,
+		Date:         date,
+		Transactions: transactions,
+	}
 }
 
 // PostProcess adjusts transaction dates for year boundary cases.

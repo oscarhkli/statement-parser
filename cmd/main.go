@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/oscarhkli/statement-parser/cmd/internal/logging"
 )
@@ -12,14 +13,21 @@ import (
 func main() {
 	logging.Init()
 
-	path := "2025-10-20_Statement"
-	text, err := readPdfDirect(path + ".pdf")
+	path := ""
+	if len(os.Args) < 2 {
+		log.Fatal("Please provide the PDF file path as an argument.")
+	}
+	path = os.Args[1]
+
+	text, err := readPdfDirect(path)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(text)
-	err = writeFile(path+".txt", text)
+
+	fileName := strings.Split(path, ".")[0]
+	err = writeFile(fileName+".txt", text)
 	if err != nil {
 		panic(err)
 	}

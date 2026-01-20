@@ -2,15 +2,87 @@ package statementparse
 
 import (
 	"log/slog"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
 func Parse(text string) Statement {
-	return *NewStatement()
+	lines := strings.Split(text, "\n")
+
+	statementDate, err := extractStatementDate(lines)
+	if err != nil {
+		slog.Error("Failed to parse statement date", "error", err)
+	}
+	transactionsText := preprocessTransactionText(text)
+	transactions, err := parseTransactions(transactionsText, statementDate.Year())
+	if err != nil {
+		slog.Error("Failed to parse transactions", "error", err)
+	}
+
+	statement := NewStatement(
+		extractStatementType(lines),
+		statementDate,
+		transactions,
+	)
+	statement.PostProcess()
+	return *statement
 }
 
+func extractStatementType(lines []string) string {
+	for _, line := range lines {
+		lineUpper := strings.ToUpper(line)
+		if !strings.Contains(lineUpper, "STATEMENT") {
+			continue
+		}
+
+		if strings.Contains(lineUpper, "VISA SIGNATURE") {
+			return "HSBC Visa Signature"
+		}
+		if strings.Contains(lineUpper, "HSBC RED") {
+			return "HSBC Red"
+		}
+	}
+	return ""
+}
+
+// extractStatementDate parses the statement date.
+// It tries to find a line containing "Statement Date:" and extract the date following it in the next line.
+// Returns zero time if not found or parsing fails.
+func extractStatementDate(lines []string) (time.Time, error) {
+	for i, line := range lines {
+		if !strings.Contains(strings.ToUpper(line), "STATEMENT DATE") {
+			continue
+		}
+		if i == len(lines)-1 {
+			break
+		}
+
+		dateLine := strings.TrimSpace(lines[i+1])
+		re := regexp.MustCompile(`\b\d{1,2}\s+[A-Z]{3}\s+\d{4}\b`)
+		match := re.FindString(dateLine)
+		if match == "" {
+			slog.Warn("Statement date pattern not found in line", "line", dateLine)
+			return time.Time{}, nil
+		}
+
+		return time.Parse("02 Jan 2006", match)
+	}
+
+	slog.Warn("Statement date not found in text")
+	return time.Time{}, nil
+}
+
+// TODO: Preprocess text to extract transaction section
+func preprocessTransactionText(text string) string {
+	// Placeholder implementation
+	return text
+}
+
+// findPhraseEndIndex finds the end index of a phrase starting from 'start' index.
+// A phrase is defined as a sequence of non-space characters possibly separated by single spaces.
+// The phrase ends when two consecutive spaces are found or end of string is reached.
 func findPhraseEndIndex(text string, start int) int {
 	n := len(text)
 	end := start
@@ -29,8 +101,8 @@ func findPhraseEndIndex(text string, start int) int {
 	return n - 1
 }
 
+// parseDate parses date by capitalizing month to uppercase first letter, lowercase rest
 func parseDate(dateStr string) (time.Time, error) {
-	// Capitalize month to uppercase first letter, lowercase rest
 	normalized := strings.ToUpper(dateStr[:3]) + strings.ToLower(dateStr[3:])
 	return time.Parse("02Jan2006", normalized)
 }
@@ -41,7 +113,8 @@ func parseAmount(amountStr string) (float32, error) {
 	return float32(amount), err
 }
 
-func ParseTransactions(text string, year int) ([]*Transaction, error) {
+// parseTransactions parses transaction lines from the given text for the specified year.
+func parseTransactions(text string, year int) ([]*Transaction, error) {
 	var transactions []*Transaction
 	if len(text) == 0 {
 		return transactions, nil

@@ -2,6 +2,8 @@ package statementparse
 
 import (
 	"math"
+	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -10,6 +12,96 @@ func TestParseEmptyString(t *testing.T) {
 	res := Parse("")
 	if len(res.Transactions) > 0 {
 		t.Errorf("Parse(\"\") = %v; want []", res)
+	}
+}
+
+func TestExtractStatementType(t *testing.T) {
+	testCases := []struct {
+		desc     string
+		textPath string
+		want     string
+	}{
+		{
+			desc:     "with statement type",
+			textPath: "testdata/statementType/withType.txt",
+			want:     "HSBC Visa Signature",
+		},
+		{
+			desc:     "without statement type",
+			textPath: "testdata/statementType/withoutType.txt",
+			want:     "",
+		},
+		{
+			desc:     "statment type in non-first line",
+			textPath: "testdata/statementType/withTypeNonFirstLine.txt",
+			want:     "HSBC Visa Signature",
+		},
+		{
+			desc:     "HSBC Red",
+			textPath: "testdata/statementType/red.txt",
+			want:     "HSBC Red",
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.desc, func(t *testing.T) {
+			data, err := os.ReadFile(tt.textPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := extractStatementType(strings.Split(string(data), "\n"))
+			if got != tt.want {
+				t.Errorf("ExtractStatementType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestExtractStatementDate(t *testing.T) {
+	testCases := []struct {
+		desc     string
+		textPath string
+		want     time.Time
+		wantErr  bool
+	}{
+		{
+			desc:     "with valid date",
+			textPath: "testdata/statementDate/withDate.txt",
+			want:     time.Date(2025, 10, 13, 0, 0, 0, 0, time.UTC),
+			wantErr:  false,
+		},
+		{
+			desc:     "without date",
+			textPath: "testdata/statementDate/withoutDate.txt",
+			want:     time.Time{},
+			wantErr:  false,
+		},
+		{
+			desc:     "invalid date",
+			textPath: "testdata/statementDate/invalidDate.txt",
+			want:     time.Time{},
+			wantErr:  false,
+		},
+		{
+			desc:     "missing header",
+			textPath: "testdata/statementDate/missingHeader.txt",
+			want:     time.Time{},
+			wantErr:  false,
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.desc, func(t *testing.T) {
+			data, err := os.ReadFile(tt.textPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := extractStatementDate(strings.Split(string(data), "\n"))
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("ParseStatementDate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !got.Equal(tt.want) {
+				t.Errorf("ParseStatementDate() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -189,7 +281,7 @@ func TestParseTransactions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseTransactions(tt.text, tt.year)
+			got, err := parseTransactions(tt.text, tt.year)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("ParseTransactions() error = %v, wantErr %v", err, tt.wantErr)
 			}
