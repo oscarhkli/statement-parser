@@ -1,36 +1,66 @@
 package main
 
 import (
+	"errors"
+	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/oscarhkli/statement-parser/cmd/internal/logging"
+	"github.com/oscarhkli/statement-parser/cmd/statementparse"
 )
 
 func main() {
 	logging.Init()
 
-	path := ""
-	if len(os.Args) < 2 {
-		log.Fatal("Please provide the PDF file path as an argument.")
+	if err := run(); err != nil {
+		slog.Error("application fail", "err", err)
+		os.Exit(1)
 	}
-	path = os.Args[1]
+}
+
+func run() error {
+	outputType := ""
+	flag.StringVar(&outputType, "o", "json", "Output format {json|csv}")
+	flag.Parse()
+
+	args := flag.Args()
+	path := ""
+	if len(args) == 0 {
+		return errors.New("Please provide the path to the PDF statement")
+	} else if len(args) > 1 {
+		flag.Usage()
+		return errors.New("too many arguments provided")
+	}
+
+	path = args[0]
 
 	text, err := readPdfDirect(path)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	fmt.Println(text)
+	statement := statementparse.Parse(text)
+	outputText := ""
+	if outputType == "json" {
+		jsonStr, err := statement.ToJSON()
+		if err != nil {
+			return errors.New("Failed to convert statement to JSON: " + err.Error())
+		}
+		outputText = jsonStr
+	} else if outputType == "csv" {
+		csvStr, err := statement.ToCSV()
+		if err != nil {
+			return errors.New("Failed to convert statement to CSV: " + err.Error())
+		}
+		outputText = csvStr
+	}
 
 	fileName := strings.Split(path, ".")[0]
-	err = writeFile(fileName+".txt", text)
-	if err != nil {
-		panic(err)
-	}
+	return writeFile(fmt.Sprintf("%s.%s", fileName, outputType), outputText)
 }
 
 func writeFile(path string, content string) error {
@@ -48,7 +78,7 @@ func readPdfDirect(path string) (string, error) {
 	cmd := exec.Command("pdftotext", "-layout", "-nopgbrk", path, "-")
 	out, err := cmd.Output()
 	if err != nil {
-		log.Fatalf("pdftotext failed: %v", err)
+		return "", errors.New("pdftotext failed: " + err.Error())
 	}
 	text := string(out)
 	return text, nil

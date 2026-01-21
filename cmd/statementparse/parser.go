@@ -145,10 +145,10 @@ func parseDate(dateStr string) (time.Time, error) {
 	return time.Parse("02Jan2006", normalized)
 }
 
-func parseAmount(amountStr string) (float32, error) {
+func parseAmount(amountStr string) (float64, error) {
 	amountStr = strings.ReplaceAll(amountStr, ",", "")
-	amount, err := strconv.ParseFloat(strings.TrimSpace(amountStr), 32)
-	return float32(amount), err
+	amount, err := strconv.ParseFloat(strings.TrimSpace(amountStr), 64)
+	return amount, err
 }
 
 // parseTransactions parses transaction lines from the given text for the specified year.

@@ -15,18 +15,26 @@ func TestTransactnion_PostProcess(t *testing.T) {
 			name: "Currency set",
 			input: &Transaction{
 				Currency: "USD",
+				LocalAmount: 123.456,
+				Amount: 34567.565,
 			},
 			expected: &Transaction{
 				Currency: "USD",
+				LocalAmount: 123.456,
+				Amount: 34567.565,
 			},
 		},
 		{
 			name: "Currency empty",
 			input: &Transaction{
 				Currency: "",
+				LocalAmount: -123,
+				Amount: 567.89,
 			},
 			expected: &Transaction{
 				Currency: "HKD",
+				LocalAmount: 567.89,
+				Amount: 567.89,
 			},
 		},
 	}
