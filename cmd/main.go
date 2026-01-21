@@ -24,7 +24,7 @@ func main() {
 
 func run() error {
 	outputType := ""
-	flag.StringVar(&outputType, "o", "json", "Output format {json|csv}")
+	flag.StringVar(&outputType, "output", "json", "Output format {json|csv}")
 	flag.Parse()
 
 	args := flag.Args()
@@ -45,13 +45,16 @@ func run() error {
 
 	statement := statementparse.Parse(text)
 	outputText := ""
-	if outputType == "json" {
+
+	outputType = strings.ToLower(outputType)
+	switch outputType {
+	case "json":
 		jsonStr, err := statement.ToJSON()
 		if err != nil {
 			return errors.New("Failed to convert statement to JSON: " + err.Error())
 		}
 		outputText = jsonStr
-	} else if outputType == "csv" {
+	case "csv":
 		csvStr, err := statement.ToCSV()
 		if err != nil {
 			return errors.New("Failed to convert statement to CSV: " + err.Error())
