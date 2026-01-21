@@ -1,0 +1,67 @@
+12SEP      10SEP       Momo Kingdom Ltd            Ealing                            GB      GBP                       8.99                               97.03
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.79310
+12SEP      10SEP       KFC-STS               EALING                            GB      GBP                       4.49                               48.46
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.79287
+15SEP      13SEP       ProCook Watford            Watford                           GB      GBP                    210.60                        2,271.28
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.78481
+15SEP     13SEP       Lartista Pizzeria          Watford                GB     GBP             45.10                   486.39
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.78470
+15SEP     13SEP       Dunelm - F0575             Watford                GB     GBP              9.40                   101.38
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.78511
+16SEP     14SEP       TFL TRAVEL CH              TFL.GOV.UK/CP          GB     GBP              3.50                      37.74
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.78286
+20SEP     18SEP       WH Smith Ealing            Ealing                 GB     GBP              4.49                      48.85
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.87973
+25SEP     23SEP       Momo Kingdom           Ealing                 GB     GBP              7.99                      85.57
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.70964
+25SEP     23SEP       FIREWORKS LONDON                  GB     GBP            130.00                1,392.26
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.70969
+25SEP     23SEP       BURGER KING               EALING ST PAN          GB     GBP              6.49                      69.51
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.71032
+25SEP     23SEP       TESCO STORES 3333         EALING 2               GB     GBP              4.90                      52.47
+*EXCHANGE RATE: 10.70816
+27SEP     23SEP       TFL TRAVEL CH             TFL.GOV.UK/CP          GB     GBP             10.00                   107.32
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.73200
+27SEP     25SEP       Amar Bakery               Ealing                 GB     GBP              9.99                   107.19
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.72973
+02OCT     30SEP       TESCO STORES 3333         EALING 2               GB     GBP             33.65                   359.16
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.67340
+02OCT     30SEP       Momo Kingdom           Ealing                 GB     GBP              8.99                      95.96
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.67408
+02OCT     29SEP       WM MORRISONS STORE        EALING                 GB     GBP             10.60                   112.79
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.64057
+04OCT     04OCT       PAY WITH RC STATEMENT OFFSET: SEP2025                                                        6,873.00CR
+04OCT     02OCT       TESCO STORES 3333         EALING 2               GB     GBP              8.86                   95.09
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.73251
+06OCT     04OCT       LUNCH TIME          EALING                 GB     GBP              9.36                   100.15
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.69979
+06OCT     04OCT       TESCO STORES 3333         EALING 2               GB     GBP             16.86                   180.39
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.69929
+06OCT     03OCT       WM MORRISONS STORE        EALING                 GB     GBP              6.45                      69.12
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.71628
+06OCT     04OCT       IFS PAYMENT - THANK YOU                                                                             0.99CR
+08OCT     05OCT       BOOTS,0234                EALING                 GB     GBP              2.70                      28.88
+APPLE PAY-MOBILE:9999
+*EXCHANGE RATE: 10.69630
+13OCT     10OCT       Crispies                  Ealing                 GB     GBP             19.40                   206.53
+APPLE Pay-MOBILE:9999
+*EXCHANGE RATE: 10.64588

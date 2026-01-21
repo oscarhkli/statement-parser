@@ -15,7 +15,8 @@ func Parse(text string) Statement {
 	if err != nil {
 		slog.Error("Failed to parse statement date", "error", err)
 	}
-	transactionsText := preprocessTransactionText(text)
+	transactionLines := preprocessTransactionText(lines)
+	transactionsText := strings.Join(transactionLines, "\n")
 	transactions, err := parseTransactions(transactionsText, statementDate.Year())
 	if err != nil {
 		slog.Error("Failed to parse transactions", "error", err)
@@ -75,9 +76,46 @@ func extractStatementDate(lines []string) (time.Time, error) {
 }
 
 // TODO: Preprocess text to extract transaction section
-func preprocessTransactionText(text string) string {
-	// Placeholder implementation
-	return text
+func preprocessTransactionText(lines []string) []string {
+	var results []string
+
+	inSection := false
+	inTransaction := false
+	re := regexp.MustCompile(`^\s*\d{2}[A-Z]{3}\s+\d{2}[A-Z]{3}`)
+
+	for _, line := range lines {
+		trimmedLine := strings.TrimSpace(line)
+		trimmedLineUpper := strings.ToUpper(trimmedLine)
+
+		if strings.Contains(trimmedLineUpper, "POST DATE") && strings.Contains(trimmedLineUpper, "TRANS DATE") {
+			inSection = true
+			inTransaction = false
+			continue
+		}
+
+		if !inSection {
+			continue
+		}
+
+		if trimmedLine == "" {
+			if inTransaction {
+				inTransaction = false
+			}
+			continue
+		}
+
+		if re.MatchString(trimmedLine) {
+			inTransaction = true
+			results = append(results, trimmedLine)
+			continue
+		}
+
+		if inTransaction {
+			results = append(results, trimmedLine)
+		}
+	}
+
+	return results
 }
 
 // findPhraseEndIndex finds the end index of a phrase starting from 'start' index.

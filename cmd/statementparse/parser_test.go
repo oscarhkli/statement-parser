@@ -1,6 +1,7 @@
 package statementparse
 
 import (
+	"fmt"
 	"math"
 	"os"
 	"strings"
@@ -105,32 +106,35 @@ func TestExtractStatementDate(t *testing.T) {
 	}
 }
 
-// func TestParseSampleStatement(t *testing.T) {
-// 	t.Skip("incomplete test - implement parsing logic")
+func TestPreprocessTransactionText(t *testing.T) {
+	textPath := "testdata/hsbc-vs-001.txt"
+	data, err := os.ReadFile(textPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sampleText := strings.Split(string(data), "\n")
 
-// 	data, err := os.ReadFile("testdata/hsbc-vs-001.txt")
-// 	if err != nil {
-// 		t.Fatalf("Failed to read test data: %v", err)
-// 	}
-// 	sampleText := string(data)
+	got := preprocessTransactionText(sampleText)
 
-// 	res := Parse(sampleText)
-// 	wanted := Statement{
-// 		Type: "HSBC Statement",
-// 		Date: time.Date(2025, 10, 20, 0, 0, 0, 0, time.UTC),
-// 		Transactions: []Transaction{
-// 			{
-// 				PostDate:        time.Date(2025, 9, 12, 0, 0, 0, 0, time.UTC),
-// 				TransactionDate: time.Date(2025, 9, 10, 0, 0, 0, 0, time.UTC),
-// 				Description:     "Momo Kingdom Ltd",
-// 			},
-// 		},
-// 	}
-
-// 	if res.Date != wanted.Date {
-// 		t.Errorf("Parse(sampleText) = %v; want %v", res, wanted)
-// 	}
-// }
+	wantTextPath := "testdata/hsbc-vs-001-want.txt"
+	wantData, err := os.ReadFile(wantTextPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := strings.Split(string(wantData), "\n")
+	if len(got) != len(want) {
+		t.Fatalf("PreprocessTransactionText() length = %v; want %v", len(got), len(want))
+	}
+	var errMsg []string
+	for i := range got {
+		if got[i] != want[i] {
+			errMsg = append(errMsg, fmt.Sprintf("PreprocessTransactionText() line %d\n got %q\nwant %q", i, got[i], want[i]))
+		}
+	}
+	if len(errMsg) > 0 {
+		t.Errorf("PreprocessTransactionText() mismatches:\n%s", strings.Join(errMsg, "\n"))
+	}
+}
 
 func compareTransactions(t *testing.T, got, want []*Transaction) {
 	if len(got) != len(want) {

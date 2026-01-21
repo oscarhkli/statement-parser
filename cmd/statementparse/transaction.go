@@ -54,3 +54,11 @@ func (s *Statement) PostProcess() {
 		}
 	}
 }
+
+func (s Statement) ToJSON() (string, error) {
+	return "", nil
+}
+
+func (s Statement) ToCSV() (string, error) {
+	return "", nil
+}
